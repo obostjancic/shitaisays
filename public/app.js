@@ -1,6 +1,4 @@
-import { store } from "./store.js";
-
-window.snippets = function snippets() {
+function snippets() {
   return {
     items: [],
     draft: { text: "", model: "" },
@@ -117,4 +115,4 @@ window.snippets = function snippets() {
       return Math.floor(diff / 86400) + "d ago";
     },
   };
-};
+}

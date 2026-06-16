@@ -2,7 +2,7 @@
 // origin (/api/...). The data lives in Workers KV, server-side — no keys or
 // secrets are ever exposed to the browser.
 
-export const store = {
+const store = {
   async list() {
     const res = await fetch("/api/snippets");
     if (!res.ok) throw new Error("failed to load");
