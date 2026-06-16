@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shitaisays — what the AI said</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+</head>
+<body>
+  <main class="terminal" x-data="snippets()" x-init="load()">
+    <header class="topbar">
+      <span class="ps1">agent@shitaisays:~$</span>
+      <span class="cmd">cat funny_outputs.log</span>
+      <span class="cursor">▋</span>
+    </header>
+
+    <!-- Add form -->
+    <section class="card add-card">
+      <form @submit.prevent="add()">
+        <label class="field-label"># paste what the AI said</label>
+        <textarea
+          x-model="draft.text"
+          @paste="onPaste($event)"
+          rows="3"
+          maxlength="1000"
+          placeholder="> the model confidently told me 2 + 2 = potato..."
+          required
+        ></textarea>
+        <div class="add-row">
+          <div class="combo" @keydown.escape="comboOpen = false" @click.outside="comboOpen = false">
+            <input
+              class="model-input"
+              x-model="draft.model"
+              type="text"
+              maxlength="60"
+              autocomplete="off"
+              placeholder="pick or type a model…"
+              @focus="comboOpen = true"
+              @input="comboOpen = true"
+            />
+            <span class="combo-caret" @click="comboOpen = !comboOpen">▾</span>
+            <ul class="combo-list" x-show="comboOpen && modelMatches.length" x-transition.opacity>
+              <template x-for="m in modelMatches" :key="m">
+                <li
+                  class="combo-item"
+                  :class="{ active: draft.model === m }"
+                  @click="draft.model = m; comboOpen = false"
+                  x-text="m"
+                ></li>
+              </template>
+            </ul>
+          </div>
+          <span class="charcount" x-text="(draft.text?.length || 0) + '/1000'"></span>
+          <button class="btn-primary" type="submit" :disabled="loading || !draft.text?.trim()">
+            <span x-show="!loading">commit &gt;&gt;</span>
+            <span x-show="loading">writing…</span>
+          </button>
+        </div>
+        <p class="err" x-show="error" x-text="error"></p>
+      </form>
+    </section>
+
+    <!-- Search -->
+    <section class="search-line">
+      <span class="search-ps1">grep</span>
+      <input
+        class="search-input"
+        type="text"
+        x-model="query"
+        placeholder="search snippets or @model…"
+      />
+      <button class="clear-btn" x-show="query" @click="query = ''">clear</button>
+    </section>
+
+    <!-- Stats -->
+    <section class="meta-line">
+      <span x-text="'// ' + filtered.length + ' of ' + items.length + ' snippet' + (items.length === 1 ? '' : 's')"></span>
+      <span class="sep">·</span>
+      <span>sorted by: newest</span>
+    </section>
+
+    <!-- Feed -->
+    <section class="feed">
+      <template x-if="!loading && items.length === 0">
+        <div class="empty">
+          <p>// no output captured yet.</p>
+          <p class="dim">Be the first to immortalize an unhinged AI moment.</p>
+        </div>
+      </template>
+
+      <template x-if="!loading && items.length > 0 && filtered.length === 0">
+        <div class="empty">
+          <p>// no matches for "<span x-text="query"></span>"</p>
+        </div>
+      </template>
+
+      <template x-for="s in filtered" :key="s.id">
+        <article class="card snippet">
+          <p class="snippet-text" x-text="s.text"></p>
+          <footer class="snippet-foot">
+            <span class="tag" x-text="'@' + s.model"></span>
+            <span class="time" x-text="ago(s.createdAt)"></span>
+            <button class="vote" @click="vote(s)">
+              ▲ <span x-text="s.votes"></span>
+            </button>
+            <button class="del" @click="remove(s)" title="delete">rm</button>
+          </footer>
+        </article>
+      </template>
+    </section>
+
+    <footer class="bottombar">
+      <span>exit code 0 — stay weird, stay hallucinating</span>
+    </footer>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+name = "shitaisays"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "public"
+
+# Workers KV namespace holding the snippets.
+# Create one with:  npx wrangler kv namespace create SNIPPETS
+# then paste its id below (and a preview_id for local dev).
+[[kv_namespaces]]
+binding = "SNIPPETS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
