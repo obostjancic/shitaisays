@@ -81,3 +81,4 @@ env.CF_PAGES_URL ("https://03ea3fd.shitaisays.pages.dev")                 Enviro
 [wrangler:info] GET /app.js 304 Not Modified (3ms)
 [wrangler:info] GET /api/snippets 200 OK (3ms)
 [wrangler:info] GET /favicon.ico 304 Not Modified (3ms)
+[wrangler:info] POST /api/snippets 201 Created (6ms)

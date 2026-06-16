@@ -32,13 +32,17 @@ function snippets() {
       );
     },
 
-    // Normalize messy pasted text: collapse runaway whitespace, trim lines.
+    // Normalize messy pasted text. Crucially, unwrap terminal line-wraps:
+    // single newlines inside a paragraph become spaces, while blank lines
+    // (real paragraph breaks) are preserved.
     cleanText(raw) {
       return raw
         .replace(/\r\n?/g, "\n")
         .replace(/[ \t]+/g, " ")
-        .replace(/ *\n */g, "\n")
-        .replace(/\n{3,}/g, "\n\n")
+        .split(/\n{2,}/) // paragraphs split on blank lines
+        .map((p) => p.replace(/\n/g, " ").replace(/ +/g, " ").trim())
+        .filter(Boolean)
+        .join("\n\n")
         .trim();
     },
 
